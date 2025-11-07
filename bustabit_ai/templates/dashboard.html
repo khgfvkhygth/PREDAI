@@ -1,0 +1,71 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Bustabit Live Predictor</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial;
+            text-align: center;
+            background-color: #111;
+            color: #eee;
+            padding: 40px;
+        }
+
+        h1 {
+            margin-bottom: 30px;
+        }
+
+        #zone, #prediction {
+            font-size: 1.4em;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎰 Bustabit Live Multiplier Predictor</h1>
+    <canvas id="multChart" width="800" height="400"></canvas>
+    <div id="zone">Zone: Loading...</div>
+    <div id="prediction">Prediction: Loading...</div>
+
+    <script>
+        const ctx = document.getElementById('multChart').getContext('2d');
+        const chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Multiplier',
+                    borderColor: 'lime',
+                    backgroundColor: 'green',
+                    data: [],
+                    fill: false
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        suggestedMin: 1,
+                        suggestedMax: 30
+                    }
+                }
+            }
+        });
+
+        async function fetchData() {
+            const res = await fetch('/data');
+            const data = await res.json();
+
+            chart.data.labels = data.labels;
+            chart.data.datasets[0].data = data.values;
+            chart.update();
+
+            document.getElementById("zone").innerText = `Zone: ${data.zone}`;
+            document.getElementById("prediction").innerText = `Prediction: ${data.prediction}`;
+        }
+
+        setInterval(fetchData, 2500);
+        fetchData();
+    </script>
+</body>
+</html>
